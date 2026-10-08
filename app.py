@@ -146,8 +146,7 @@ with tab2:
         elif not uploaded_files:
             st.warning("⚠️ กรุณาอัปโหลดเอกสารทางการเงินอย่างน้อย 1 ไฟล์")
         else:
-            # แก้ไขจุดที่ 1: เปลี่ยนมาใช้ api_key_input จาก Sidebar
-            client = genai.Client(api_key=api_key_input)
+            client = genai.Client(api_key="api_key=api_key_input"  )
             
             with st.spinner("🤖 ระบบกำลังจัดหมวดหมู่และรวมเล่มเอกสารด้วย Python..."):
                 try:
@@ -211,6 +210,7 @@ with tab2:
 
                         st.info("📋 **รายงานการจัดหมวดหมู่เอกสารอัตโนมัติ (Rule-based Sorting Report):**\n" + "\n".join(file_categorized_summary))
 
+                    # 🌟 รวมร่างระเบียบหลัก เข้ากับ ไคเทเรียเฉพาะกิจ ส่งให้ AI ประมวลผลแบบฉลาดไร้รอยต่อ
                     combined_system_prompt = f"""
                     {st.session_state.system_regulations}
                     
@@ -240,8 +240,6 @@ with tab2:
                     for attempt in range(max_retries):
                         try:
                             status_placeholder.info(f"🔄 กำลังส่งข้อมูลวิเคราะห์ไปยัง Google (ความพยายามครั้งที่ {attempt + 1}/{max_retries})...")
-                            
-                            # แก้ไขจุดที่ 2: เปลี่ยนชื่อ model gemini-3.8-flash
                             response = client.models.generate_content(
                                 model='gemini-3.8-flash',
                                 contents=prompt_contents,
@@ -269,10 +267,6 @@ with tab2:
                             pass
 
                     response_text = response.text.strip()
-                    # แก้ไขจุดที่ 3: ลบสัญลักษณ์โค้ดบล็อกออก ป้องกัน JSON Decode Error
-                    if response_text.startswith("```"):
-                        response_text = response_text.replace("```json", "").replace("```", "").strip()
-                        
                     analysis_data = json.loads(response_text)
 
                     st.success("✨ วิเคราะห์ข้อมูลสำเร็จ! สรุปผลการประเมินศักยภาพสินเชื่อ:")
