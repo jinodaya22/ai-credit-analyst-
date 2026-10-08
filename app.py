@@ -146,7 +146,8 @@ with tab2:
         elif not uploaded_files:
             st.warning("⚠️ กรุณาอัปโหลดเอกสารทางการเงินอย่างน้อย 1 ไฟล์")
         else:
-            client = genai.Client(api_key="api_key=api_key_input"  )
+           # แก้ไขจุดที่ 1: เปลี่ยนมาใช้ api_key_input จาก Sidebar
+            client = genai.Client(api_key=api_key_input)
             
             with st.spinner("🤖 ระบบกำลังจัดหมวดหมู่และรวมเล่มเอกสารด้วย Python..."):
                 try:
@@ -267,6 +268,10 @@ with tab2:
                             pass
 
                     response_text = response.text.strip()
+                    # แก้ไขจุดที่ 3: ลบสัญลักษณ์โค้ดบล็อกออก ป้องกัน JSON Decode Error
+                    if response_text.startswith("```"):
+                        response_text = response_text.replace("```json", "").replace("```", "").strip()
+                        
                     analysis_data = json.loads(response_text)
 
                     st.success("✨ วิเคราะห์ข้อมูลสำเร็จ! สรุปผลการประเมินศักยภาพสินเชื่อ:")
